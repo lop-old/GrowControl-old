@@ -1,21 +1,31 @@
-#!/bin/sh
+#!/bin/bash
 
-echo
-
-if [ -L "gcCommon" ]; then
-	echo "gcCommon symlink already exists"
+function makelinks {
 	echo
-	exit 1
-fi
+	echo $1
+	if [ -d "$1/src/com/growcontrol/" ]; then
+		cd "$1/src/com/growcontrol/"
+		if [ -L "gcCommon" ] || [ -d "gcCommon" ]; then
+			echo "gcCommon already exists"
+		else
+			ln -s ../../../../gcCommon gcCommon
+			ls -l --color=auto gcComm*
+		fi
+		cd ../../../../
+	fi
+	if [ -d "$1/" ]; then
+		cd "$1/"
+		if [ -L "lib" ] || [ -d "lib" ]; then
+			echo "lib already exists"
+		else
+			ln -s ../lib lib
+			ls -l --color=auto li*
+		fi
+		cd ../
+	fi
+}
 
-if [ -d "gcCommon" ]; then
-	echo "gcCommon dir exists!"
-	echo
-	exit 1
-fi
-
-ln -s ../../../../gcCommon gcCommon
-
-ls -lah
+makelinks "server"
+makelinks "client"
 echo
 

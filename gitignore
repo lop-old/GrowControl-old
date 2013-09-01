@@ -1,9 +1,8 @@
 .gitignore
-.metadata
+.metadata/
 client/bin/
-client/lib/
-client/src/com/growcontrol/gcCommon/
+client/lib
+client/src/com/growcontrol/gcCommon
 server/bin/
-server/lib/
-server/src/com/growcontrol/gcCommon/
-
+server/lib
+server/src/com/growcontrol/gcCommon

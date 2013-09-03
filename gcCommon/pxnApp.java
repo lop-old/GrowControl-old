@@ -19,6 +19,7 @@ public abstract class pxnApp {
 
 	// run state
 	private long startTime = -1;
+	private static volatile boolean running = false;
 	private volatile boolean stopping = false;
 
 	public abstract String getAppName();
@@ -52,11 +53,35 @@ public abstract class pxnApp {
 	}
 
 
-	public void Start() {
+	// start app
+	public static synchronized void doStart() {
+		if(running) {
+			System.out.println("App already running, can't use doStart() again!");
+			System.exit(1);
+		}
+		running = true;
+		// queue app startup
+		pxnThreadQueue.addToMain("app-startup", new Runnable() {
+			@Override
+			public void run() {
+				String name = get().getAppName();
+				try {
+					// start app
+					pxnLog.get().Major("Starting "+name+"..");
+					get().Start();
+					pxnLog.get().Major(name+" Ready!");
+				} catch (Exception e) {
+					pxnLog.get().fatal("Failed to start "+name+"!", e);
+					System.exit(1);
+				}
+			}
+		});
+	}
+	protected void Start() {
 		Thread.currentThread().setName("Main-"+getAppName()+"-Thread");
 		// single instance lock
 		pxnUtils.lockInstance(getAppName()+".lock");
-		pxnLog.get().Major("Starting "+getAppName()+"..");
+//		pxnLog.get().Major("Starting "+getAppName()+"..");
 		pxnUtils.addLibraryPath("lib");
 		// query time server
 		pxnClock clock = pxnClock.getBlocking();
@@ -81,7 +106,8 @@ public abstract class pxnApp {
 			@Override
 			public void run() {
 				ShutdownThread();
-				pxnThreadQueue.getMain().Exit();
+				running = false;
+				pxnThreadQueue.Exit();
 			}
 		});
 	}
@@ -143,7 +169,6 @@ public abstract class pxnApp {
 	public String getPluginPath(String pluginName) {
 		return getPluginsPath()+pluginName+"/";
 	}
-
 
 
 }

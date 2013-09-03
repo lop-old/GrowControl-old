@@ -21,7 +21,7 @@ import com.growcontrol.gcCommon.pxnThreadQueue.pxnThreadQueue;
 
 public class gcClient extends pxnApp {
 	public static final String appName = "gcClient";
-	public static final String version = "3.0.7";
+	public static final String version = "3.0.10";
 	public static final String defaultPrompt = "";
 
 	// client socket
@@ -72,7 +72,7 @@ System.exit(0);
 			return;
 		}
 		// set log level
-		updateLogLevel();
+		UpdateLogLevel();
 		// init listeners
 		ClientListeners.get();
 		// start console input thread
@@ -99,9 +99,8 @@ System.exit(0);
 
 		// start gui manager
 		guiManager.get();
-		log.Publish("[[ GC Client Running! ]]");
 
-		// show connect window
+//		// show connect window
 //		state.setStateClosed();
 //		// connect to server
 //		conn = new connection("192.168.3.3", 1142);
@@ -233,7 +232,7 @@ pxnLog.get().severe("CONNECTED!!!!!!!!!!!!!!!!!!!");
 
 	// log level
 	@Override
-	protected void updateLogLevel() {
+	protected void UpdateLogLevel() {
 		if(forceDebug) {
 			pxnLog.get().setLevel(pxnLevel.DEBUG);
 			return;
@@ -242,7 +241,7 @@ pxnLog.get().severe("CONNECTED!!!!!!!!!!!!!!!!!!!");
 		String levelStr = ClientConfig.LogLevel();
 		if(levelStr != null && !levelStr.isEmpty()) {
 			pxnLog.get().setLevel(
-				pxnLevel.parse(levelStr)
+				pxnLevel.Parse(levelStr)
 			);
 		}
 	}
@@ -272,6 +271,11 @@ pxnLog.get().severe("CONNECTED!!!!!!!!!!!!!!!!!!!");
 		synchronized(zones) {
 			return (String[]) zones.toArray();
 		}
+	}
+
+
+	@Override
+	public void setLogLevel(pxnLevel level) {
 	}
 
 

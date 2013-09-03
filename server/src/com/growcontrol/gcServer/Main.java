@@ -35,18 +35,7 @@ public class Main extends pxnMain {
 		// parse command args
 		ProcessArgs();
 		// queue server startup
-		pxnThreadQueue.addToMain("server-startup", new Runnable() {
-			@Override
-			public void run() {
-				try {
-					// start server
-					gcServer.get().Start();
-				} catch (Exception e) {
-					pxnLog.get().fatal("Failed to start server!", e);
-					System.exit(1);
-				}
-			}
-		});
+		gcServer.doStart();
 		// start/hand-off thread to main queue
 		pxnThreadQueue.getMain().run();
 		// main thread ended

@@ -55,19 +55,19 @@ public class guiManager {
 		if(mode != null) startupMode = mode;
 		if(SwingUtilities.isEventDispatchThread()) {
 			doUpdate();
-		} else {
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					doUpdate();
-				}
-			});
+			return;
 		}
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				doUpdate();
+			}
+		});
 	}
 	private void doUpdate() {
 		getStartupMode();
 		synchronized(startupMode) {
-			boolean hasChanged = getStartupMode().equals(startupMode_Last);
+			boolean hasChanged = !getStartupMode().equals(startupMode_Last);
 			// close old frames
 			if(hasChanged && startupMode_Last != null) {
 				switch(startupMode_Last) {
@@ -82,7 +82,7 @@ public class guiManager {
 				}
 			}
 			// load new frames
-			switch(startupMode) {
+			switch(getStartupMode()) {
 			case LOGIN:
 				if(hasChanged)
 					getLoginHandler().Show();

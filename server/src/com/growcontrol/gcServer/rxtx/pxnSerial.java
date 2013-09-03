@@ -1,4 +1,4 @@
-package com.growcontrol.gcCommon.rxtx;
+package com.growcontrol.gcServer.rxtx;
 
 import gnu.io.CommPortIdentifier;
 

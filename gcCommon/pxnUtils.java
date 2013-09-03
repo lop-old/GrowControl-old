@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -187,6 +188,34 @@ public final class pxnUtils {
 	}
 
 
+	// list running thread names
+	public static String[] getThreadNames() {
+		Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+		if(threadSet.isEmpty()) return null;
+		List<String> list = new ArrayList<String>();
+		for(Thread thread : threadSet) {
+			switch(thread.getName()) {
+//			case "Main-Server-Thread":
+			case "Reference Handler":
+			case "NonBlockingInputStreamThread":
+			case "process reaper":
+			case "Signal Dispatcher":
+			case "Java2D Disposer":
+			case "AWT-EventQueue-0":
+			case "AWT-XAWT":
+			case "AWT-Shutdown":
+			case "Finalizer":
+			case "Exit":
+				continue;
+			default:
+				list.add(thread.getName());
+			}
+		}
+		if(list.isEmpty()) return null;
+		return list.toArray(new String[0]);
+	}
+
+
 	// sleep thread
 	public static void Sleep(long millis) {
 		try {
@@ -198,7 +227,7 @@ public final class pxnUtils {
 	public static void Sleep(TimeUnitTime time) {
 		Sleep(time.get(TimeU.MS));
 	}
-	// current time ms
+	// current system time ms
 	public static long getSystemMillis() {
 		return System.currentTimeMillis();
 	}

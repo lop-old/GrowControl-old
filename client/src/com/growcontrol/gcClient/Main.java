@@ -33,18 +33,7 @@ public class Main extends pxnMain {
 		// parse command args
 		ProcessArgs();
 		// queue client startup
-		pxnThreadQueue.addToMain("client-startup", new Runnable() {
-			@Override
-			public void run() {
-				try {
-					// start client gui
-					gcClient.get().Start();
-				} catch (Exception e) {
-					pxnLog.get().fatal("Failed to start client!", e);
-					System.exit(1);
-				}
-			}
-		});
+		gcClient.doStart();
 		// start/hand-off thread to main queue
 		pxnThreadQueue.getMain().run();
 		// main thread ended

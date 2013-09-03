@@ -2,7 +2,6 @@ package com.growcontrol.gcCommon.pxnThreadQueue;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -20,23 +19,27 @@ public class pxnThreadQueue implements Runnable {
 	}
 
 	// thread count limits
-	public static final int HardLimit = 100;
-//	public static volatile int GlobalMax = 200;
+	public static final int HardLimit = 20;
+	public static final int GlobalMax = 50;
 
+	protected final ThreadGroup group;
 	protected final List<Thread> threads;
 	protected final String queueName;
-	protected final String logName;
 	protected final BlockingQueue<pxnRunnable> queue = new ArrayBlockingQueue<pxnRunnable>(10);
 
+	protected volatile int threadPriority = Thread.NORM_PRIORITY;
 	protected volatile boolean stopping = false;
 	protected volatile int maxThreads = 1;
 	protected volatile int active = 0;
 	protected volatile int runCount = 0;
+	// cool-down
 	protected final pxnCoolDown coolMaxReached = pxnCoolDown.get("5s");
 
 	// main thread
 	protected static volatile pxnThreadQueue mainThread = null;
 	protected static final Object lock = new Object();
+
+	protected static final List<pxnThreadQueue> instances = new ArrayList<pxnThreadQueue>();
 
 
 	public static pxnThreadQueue getMain() {
@@ -59,18 +62,22 @@ public class pxnThreadQueue implements Runnable {
 	public pxnThreadQueue(String name, Integer maxThreads) {
 		if(name == null || name.isEmpty()) throw new NullPointerException("name cannot be null!");
 		this.queueName = name;
-		this.logName = name;
 		if(maxThreads != null)
 			setMax(maxThreads);
-		getLogger().setBracers("(", ")");
+		//getLogger().setBracers("(", ")");
 		// main thread (single)
 		if(name == "main") {
 			threads = null;
+			group = null;
 			maxThreads = 1;
 		// thread pool (multi)
 		} else {
 			threads = new ArrayList<Thread>();
+			group = new ThreadGroup(this.queueName);
 			addThread();
+		}
+		synchronized(instances) {
+			instances.add(this);
 		}
 		// thread queue started
 		addQueue("Thread-Startup", new Runnable() {
@@ -79,6 +86,22 @@ public class pxnThreadQueue implements Runnable {
 				getLogger().debug("Started thread queue..");
 			}
 		});
+	}
+
+
+	// thread count
+	public static int getGlobalThreadCount() {
+		int count = 0;
+		synchronized(instances) {
+			for(pxnThreadQueue queue : instances)
+				count += queue.getThreadCount();
+		}
+		return count;
+	}
+	public int getThreadCount() {
+		if(threads == null)
+			return 1;
+		return threads.size();
 	}
 
 
@@ -104,15 +127,31 @@ public class pxnThreadQueue implements Runnable {
 	}
 
 
-	// logger
-	protected pxnLogger getLogger() {
-		return pxnLog.get(logName);
+	// set thread name
+	private void setThreadName() {
+		setThreadName(null);
+	}
+	private void setThreadName(String name) {
+		if(name == null || name.isEmpty())
+			name = queueName;
+		Thread.currentThread().setName(name);
+	}
+
+
+	// thread priority
+	public void setPriority(int priority) {
+		this.threadPriority = priority;
+		synchronized(this.threads) {
+			for(Thread thread : this.threads)
+				thread.setPriority(priority);
+		}
 	}
 
 
 	// run thread queue
 	@Override
 	public void run() {
+		setThreadName();
 		// main thread
 		if(threads == null)
 			if(isRunning() || stopping)
@@ -133,25 +172,29 @@ public class pxnThreadQueue implements Runnable {
 			if(task == null) {
 				// inactive thread after 5 minutes
 				if(inactiveCount > 300 && threads != null) {
-					getLogger().info("Inactive thread");
+					getLogger().info("Inactive thread..");
 					break;
 				}
 			// active thread
 			} else {
 				runCount++;
-				inactiveCount = 0;
 				active++;
-				getLogger().finer("Running thread task: "+task.getTaskName());
-				Thread.currentThread().setName(task.getTaskName());
+				inactiveCount = 0;
+				getSubLogger(task.getTaskName()).finest("Running thread task..");
+				setThreadName(task.getTaskName());
 				try {
 					task.run();
+					// low priority can sleep
+					if(threadPriority <= (Thread.NORM_PRIORITY - Thread.MIN_PRIORITY) / 2 )
+						pxnUtils.Sleep(10);
 				} catch (Exception e) {
-					getLogger().exception(e);
+					getSubLogger(task.getTaskName()).exception(e);
 				}
+				setThreadName();
 				active--;
 			}
 		}
-		getLogger().finer("Stopped thread queue");
+//		getLogger().finer("Stopped thread queue");
 	}
 
 
@@ -160,13 +203,13 @@ public class pxnThreadQueue implements Runnable {
 		addQueue("Thread-Queue-Stopping", new Runnable() {
 			@Override
 			public void run() {
-//				pxnLogger.get().info("("+queueName+") Stopping thread queue..");
+				getLogger().fine("Stopping thread queue..");
 				stopping = true;
 			}
 		});
 	}
 	// exit program
-	public void Exit() {
+	public static void Exit() {
 		mainThread.addQueue("Exit", new Runnable() {
 			@Override
 			public void run() {
@@ -179,28 +222,13 @@ public class pxnThreadQueue implements Runnable {
 		});
 	}
 	// display threads still running
-	public void displayStillRunning() {
-		Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
-		List<String> threadNames = new ArrayList<String>();
-		int count = 0;
-		for(Thread t : threadSet) {
-			String threadName = t.getName();
-			if(threadName.equals("Main-Server-Thread"))           continue;
-			if(threadName.equals("Reference Handler"))            continue;
-			if(threadName.equals("NonBlockingInputStreamThread")) continue;
-			if(threadName.equals("process reaper"))               continue;
-			if(threadName.equals("Signal Dispatcher"))            continue;
-			if(threadName.equals("Finalizer"))                    continue;
-			if(threadName.equals("Exit"))                         continue;
-			count++;
-			threadNames.add(t.getName());
-		}
-		pxnLogger log = getLogger();
-		if(count > 0) {
-			log.severe("Threads still running: ("+count+")");
-			for(String t : threadNames)
-				log.Publish(t);
-		}
+	private static void displayStillRunning() {
+		String[] threadNames = pxnUtils.getThreadNames();
+		if(threadNames == null || threadNames.length == 0) return;
+		String msg = "Threads still running:  [ "+Integer.toString(threadNames.length)+" ]";
+		for(String name : threadNames)
+			msg += "\n  "+name;
+		pxnLog.get().Publish(msg);
 	}
 
 
@@ -215,11 +243,11 @@ public class pxnThreadQueue implements Runnable {
 		try {
 			pxnRunnable r = new pxnRunnable(name, run);
 			if(queue.offer(r, 1, TimeU.S))
-				getLogger().finer("Thread task queued..");
+				getSubLogger(name).finest("Thread task queued..");
 			else
-				getLogger().severe("Thread queue is full!!!");
+				getSubLogger(name).severe("Thread queue is full!!!");
 		} catch (InterruptedException e) {
-			getLogger().exception(e);
+			getSubLogger(name).exception(e);
 		}
 		// add new thread (if all are in use)
 		addThread();
@@ -229,41 +257,95 @@ public class pxnThreadQueue implements Runnable {
 	// add new thread (if all are in use)
 	protected synchronized void addThread() {
 		if(stopping || getMax() <= 0) return;
-		// multi-threaded mode only
+		// main thread
 		if(this.threads == null) return;
-		int count = this.threads.size();
+		// thread count (this pool)
+		int count = threads.size();
 		int free = count - active;
-		// not needed
+		// thread count (global)
+		int globalCount = getGlobalThreadCount();
+		int globalFree = GlobalMax - globalCount;
+		getLogger().finest(
+			"Pool size: "+Integer.toString(count)+" [ "+Integer.toString(getMax())+" ]  "+
+			"Active/Free: "+
+				Integer.toString(active)+"/"+
+				Integer.toString(free)+"  "+
+			"Global: "+Integer.toString(globalCount)+" [ "+GlobalMax+" ]"
+		);
+		// use existing thread
 		if(free > 0) return;
 		// restart existing thread
-		for(Thread t : this.threads) {
-			if(t == null) continue;
-			if(!t.isAlive()) {
-				t.start();
-				return;
+		if(active < count){
+			synchronized(this.threads) {
+		        for(Thread t : this.threads) {
+					//if(t == null) continue;
+					if(t.isAlive()) continue;
+					t.start();
+					break;
+				}
+//TODO:
+//				// drop extra threads
+//				if(count - active > 8) {
+//					for(Thread t : this.threads)
+//				}
 			}
+			return;
+		}
+		// global max threads
+		if(globalFree <= 0) {
+			if(coolMaxReached.Again())
+				getLogger().warning("Global max threads limit [ "+Integer.toString(globalCount)+" ] reached!");
+			else
+				getLogger().finest("Global max threads limit [ "+Integer.toString(globalCount)+" ] reached!");
+			pxnUtils.Sleep(10);
+			return;
 		}
 		// max threads
 		if(count >= getMax()) {
 			if(getMax() > 1) {
 				if(coolMaxReached.Again())
-					getLogger().warning("Max threads limit reached!");
+					getLogger().warning("Max threads limit [ "+Integer.toString(count)+" ] reached!");
 				else
-					getLogger().finest("Max threads limit reached!");
+					getLogger().finest("Max threads limit [ "+Integer.toString(count)+" ] reached!");
 			}
 			pxnUtils.Sleep(10);
 			return;
 		}
 		// new thread
-		Thread thread = new Thread(this);
-		thread.setName("pxnThreadQueue_"+queueName);
-		this.threads.add(thread);
-		thread.start();
-		getLogger().info(
-			"Threads: "+count+
-			" active: "+Integer.toString(active)+
-			" max: "+Integer.toString(getMax())
-		);
+		synchronized(this.threads) {
+			Thread thread = new Thread(group, this);
+			this.threads.add(thread);
+			thread.start();
+			thread.setPriority(threadPriority);
+		}
+//		Thread thread = new Thread(this);
+//		thread.setName("pxnThreadQueue_"+queueName);
+//		this.threads.add(thread);
+//		thread.start();
+//		getLogger().info(
+//			"Threads: "+count+
+//			" active: "+Integer.toString(active)+
+//			" max: "+Integer.toString(getMax())
+//		);
+	}
+
+
+	// logger
+	private volatile pxnLogger log = null;
+	private final Object logLock = new Object();
+	protected pxnLogger getLogger() {
+		if(log == null) {
+			synchronized(logLock) {
+				if(log == null)
+					log = pxnLog.get(queueName);
+			}
+		}
+		return log;
+	}
+	protected pxnLogger getSubLogger(String name) {
+		pxnLogger log = getLogger().get(name);
+		log.setBracers("(", ")");
+		return log;
 	}
 
 

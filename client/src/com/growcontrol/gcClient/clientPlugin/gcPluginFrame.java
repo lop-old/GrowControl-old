@@ -14,7 +14,7 @@ public class gcPluginFrame extends JInternalFrame {
 	public gcPluginFrame() {
 		setBounds(100, 100, 450, 300);
 		getContentPane().setLayout(null);
-		
+
 //		JToggleButton tglbtnNewToggleButton = new JToggleButton("New toggle button");
 //		tglbtnNewToggleButton.setBounds(150, 123, 169, 25);
 //		getContentPane().add(tglbtnNewToggleButton);

@@ -4,10 +4,10 @@
                              http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.growcontrol</groupId>
-    <artifactId>gcServer</artifactId>
+    <artifactId>gcClient</artifactId>
     <packaging>jar</packaging>
     <version>3.0.10-SNAPSHOT</version>
-    <name>Grow Control Server</name>
+    <name>Grow Control Client</name>
     <url>http://growcontrol.com</url>
     <build>
         <sourceDirectory>src</sourceDirectory>
@@ -22,7 +22,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.growcontrol.gcServer.Main</mainClass>
+                            <mainClass>com.growcontrol.gcClient.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

@@ -8,11 +8,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.growcontrol.gcCommon.pxnUtils;
 import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 import com.growcontrol.gcCommon.pxnSocket.pxnSocketUtils.pxnSocketState;
 import com.growcontrol.gcCommon.pxnSocket.processor.pxnSocketProcessorFactory;
 import com.growcontrol.gcCommon.pxnSocket.worker.pxnSocketWorker;
+import com.growcontrol.gcCommon.pxnUtils.pxnUtilsThread;
 
 
 public class pxnSocketServer implements pxnSocket {
@@ -77,7 +77,7 @@ public class pxnSocketServer implements pxnSocket {
 			if(listenerSocket == null) return;
 		}
 		listenerThread.setName("SocketServer-"+Integer.toString(port));
-		pxnUtils.Sleep(10);
+		pxnUtilsThread.Sleep(10);
 		// loop for new connections
 		synchronized(listenerThread) {
 		while(!stopping && !listenerSocket.isClosed()) {
@@ -85,7 +85,7 @@ public class pxnSocketServer implements pxnSocket {
 				// wait for a connection
 				Socket socket = listenerSocket.accept();
 				if(socket == null) {
-					pxnUtils.Sleep(50);
+					pxnUtilsThread.Sleep(50);
 					continue;
 				}
 				// new worker
@@ -128,7 +128,7 @@ public class pxnSocketServer implements pxnSocket {
 			if(listenerSocket != null && !listenerSocket.isClosed()) {
 				try {
 					listenerSocket.close();
-					pxnUtils.Sleep(10);
+					pxnUtilsThread.Sleep(10);
 				} catch (IOException e) {
 					pxnLog.get(logName).exception("Failed to close socket listener: "+Integer.toString(port), e);
 				} finally {

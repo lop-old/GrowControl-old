@@ -7,7 +7,6 @@ import com.growcontrol.gcClient.clientPlugin.gcClientPluginManager;
 import com.growcontrol.gcClient.clientSocket.gcPacketReader;
 import com.growcontrol.gcClient.clientSocket.gcPacketSender;
 import com.growcontrol.gcCommon.pxnApp;
-import com.growcontrol.gcCommon.pxnUtils;
 import com.growcontrol.gcCommon.pxnLogger.pxnLevel;
 import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
@@ -17,6 +16,7 @@ import com.growcontrol.gcCommon.pxnSocket.pxnSocketClient;
 import com.growcontrol.gcCommon.pxnSocket.pxnSocketUtils.pxnSocketState;
 import com.growcontrol.gcCommon.pxnSocket.processor.pxnSocketProcessorFactory;
 import com.growcontrol.gcCommon.pxnThreadQueue.pxnThreadQueue;
+import com.growcontrol.gcCommon.pxnUtils.pxnUtilsMath;
 
 
 public class gcClient extends pxnApp {
@@ -134,7 +134,7 @@ System.exit(0);
 			if(user == null || user.isEmpty()) user = null;
 			if(pass == null || pass.isEmpty()) pass = null;
 			this.host = host;
-			this.port = pxnUtils.MinMax(port, 1, 65535);
+			this.port = pxnUtilsMath.MinMax(port, 1, 65535);
 			this.user = user;
 			this.pass = pass;
 		}

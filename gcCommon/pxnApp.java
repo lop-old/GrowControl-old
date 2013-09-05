@@ -7,6 +7,8 @@ import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 import com.growcontrol.gcCommon.pxnScheduler.pxnScheduler;
 import com.growcontrol.gcCommon.pxnScheduler.pxnTicker;
 import com.growcontrol.gcCommon.pxnThreadQueue.pxnThreadQueue;
+import com.growcontrol.gcCommon.pxnUtils.pxnUtilsFileIO;
+import com.growcontrol.gcCommon.pxnUtils.pxnUtilsThread;
 
 
 public abstract class pxnApp {
@@ -80,9 +82,9 @@ public abstract class pxnApp {
 	protected void Start() {
 		Thread.currentThread().setName("Main-"+getAppName()+"-Thread");
 		// single instance lock
-		pxnUtils.lockInstance(getAppName()+".lock");
+		pxnUtilsFileIO.lockInstance(getAppName()+".lock");
 //		pxnLog.get().Major("Starting "+getAppName()+"..");
-		pxnUtils.addLibraryPath("lib");
+		pxnUtilsFileIO.addLibraryPath("lib");
 		// query time server
 		pxnClock clock = pxnClock.getBlocking();
 		if(startTime == -1)
@@ -115,7 +117,7 @@ public abstract class pxnApp {
 		stopping = true;
 		pxnLog.get().Major("Stopping "+getAppName());
 		for(int step=10; step>1; step--) {
-			pxnUtils.Sleep(100);
+			pxnUtilsThread.Sleep(100);
 			this.doShutdown(step);
 			switch(step) {
 			case 10:

@@ -7,8 +7,8 @@ import java.util.HashMap;
 
 import org.yaml.snakeyaml.Yaml;
 
-import com.growcontrol.gcCommon.pxnUtils;
 import com.growcontrol.gcCommon.pxnLogger.pxnLog;
+import com.growcontrol.gcCommon.pxnUtils.pxnUtilsFileIO;
 
 
 public final class pxnConfigLoader {
@@ -22,13 +22,13 @@ public final class pxnConfigLoader {
 	// load config
 	public static pxnConfig Load(String path, String file) {
 		if(file == null || file.isEmpty()) return null;
-		String f = pxnUtils.BuildFilePath(path, file);
+		String f = pxnUtilsFileIO.BuildFilePath(path, file);
 		return Load(f);
 	}
 	public static pxnConfig Load(String filePath) {
 		if(filePath == null || filePath.isEmpty()) return null;
 		pxnLog.get().fine("Loading config file: "+filePath);
-		InputStream fileInput = pxnUtils.OpenFile(filePath);
+		InputStream fileInput = pxnUtilsFileIO.OpenFile(filePath);
 		if(fileInput == null) return null;
 		return Load(fileInput);
 	}
@@ -59,7 +59,7 @@ public final class pxnConfigLoader {
 	public static pxnConfig LoadFromJar(File jarFile, String fileName) {
 		if(jarFile == null) return null;
 		if(fileName == null || fileName.isEmpty()) return null;
-		pxnUtils.InputJar inputJar = pxnUtils.OpenJarResource(jarFile, fileName);
+		pxnUtilsFileIO.InputJar inputJar = pxnUtilsFileIO.OpenJarResource(jarFile, fileName);
 		pxnConfig config = null;
 		if(inputJar != null && inputJar.fileInput != null) {
 			config = Load(inputJar.fileInput);

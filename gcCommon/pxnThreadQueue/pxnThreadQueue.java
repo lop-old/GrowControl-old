@@ -6,10 +6,11 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import com.growcontrol.gcCommon.TimeU;
-import com.growcontrol.gcCommon.pxnUtils;
 import com.growcontrol.gcCommon.pxnClock.pxnCoolDown;
 import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnUtils.pxnUtilsMath;
+import com.growcontrol.gcCommon.pxnUtils.pxnUtilsThread;
 
 
 public class pxnThreadQueue implements Runnable {
@@ -123,7 +124,7 @@ public class pxnThreadQueue implements Runnable {
 	}
 	public void setMax(int maxThreads) {
 		if(queueName.equalsIgnoreCase("main")) return;
-		this.maxThreads = pxnUtils.MinMax(maxThreads, 0, HardLimit);
+		this.maxThreads = pxnUtilsMath.MinMax(maxThreads, 0, HardLimit);
 	}
 
 
@@ -186,7 +187,7 @@ public class pxnThreadQueue implements Runnable {
 					task.run();
 					// low priority can sleep
 					if(threadPriority <= (Thread.NORM_PRIORITY - Thread.MIN_PRIORITY) / 2 )
-						pxnUtils.Sleep(10);
+						pxnUtilsThread.Sleep(10);
 				} catch (Exception e) {
 					getSubLogger(task.getTaskName()).exception(e);
 				}
@@ -223,7 +224,7 @@ public class pxnThreadQueue implements Runnable {
 	}
 	// display threads still running
 	private static void displayStillRunning() {
-		String[] threadNames = pxnUtils.getThreadNames();
+		String[] threadNames = pxnUtilsThread.getThreadNames();
 		if(threadNames == null || threadNames.length == 0) return;
 		String msg = "Threads still running:  [ "+Integer.toString(threadNames.length)+" ]";
 		for(String name : threadNames)
@@ -297,7 +298,7 @@ public class pxnThreadQueue implements Runnable {
 				getLogger().warning("Global max threads limit [ "+Integer.toString(globalCount)+" ] reached!");
 			else
 				getLogger().finest("Global max threads limit [ "+Integer.toString(globalCount)+" ] reached!");
-			pxnUtils.Sleep(10);
+			pxnUtilsThread.Sleep(10);
 			return;
 		}
 		// max threads
@@ -308,7 +309,7 @@ public class pxnThreadQueue implements Runnable {
 				else
 					getLogger().finest("Max threads limit [ "+Integer.toString(count)+" ] reached!");
 			}
-			pxnUtils.Sleep(10);
+			pxnUtilsThread.Sleep(10);
 			return;
 		}
 		// new thread

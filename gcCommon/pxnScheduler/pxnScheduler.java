@@ -5,11 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.growcontrol.gcCommon.pxnApp;
-import com.growcontrol.gcCommon.pxnUtils;
 import com.growcontrol.gcCommon.pxnClock.pxnClock;
 import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 import com.growcontrol.gcCommon.pxnThreadQueue.pxnThreadQueue;
+import com.growcontrol.gcCommon.pxnUtils.pxnUtilsMath;
+import com.growcontrol.gcCommon.pxnUtils.pxnUtilsThread;
 
 
 public class pxnScheduler extends Thread {
@@ -114,9 +115,9 @@ public class pxnScheduler extends Thread {
 			}
 			// check tasks to run (at least once a second)
 			int s = (int)( ((double)this.sleepTime)*0.9 );
-			s = pxnUtils.MinMax(s, 1, MaxSleepPerCycle);
+			s = pxnUtilsMath.MinMax(s, 1, MaxSleepPerCycle);
 			getLogger().finest("Sleeping for: "+Integer.toString(s)+"ms");
-			pxnUtils.Sleep(s);
+			pxnUtilsThread.Sleep(s);
 		}
 		running = false;
 	}

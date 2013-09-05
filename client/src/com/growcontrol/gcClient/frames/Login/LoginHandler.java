@@ -13,8 +13,8 @@ import javax.swing.SwingUtilities;
 import com.growcontrol.gcClient.gcClient;
 import com.growcontrol.gcClient.guiManager;
 import com.growcontrol.gcClient.frames.gcFrameHandlerInterface;
-import com.growcontrol.gcCommon.pxnUtils;
 import com.growcontrol.gcCommon.pxnLogger.pxnLog;
+import com.growcontrol.gcCommon.pxnUtils.pxnUtilsString;
 
 
 public class LoginHandler implements gcFrameHandlerInterface, KeyEventDispatcher {
@@ -152,7 +152,7 @@ public class LoginHandler implements gcFrameHandlerInterface, KeyEventDispatcher
 				} catch (Exception ignore) {}
 			}
 			String user = frame.textUsername.getText();
-			String pass = pxnUtils.MD5(frame.textHost.getText());
+			String pass = pxnUtilsString.MD5(frame.textHost.getText());
 			gcClient.get().Connect(host, port, user, pass);
 			break;
 		case "Cancel":

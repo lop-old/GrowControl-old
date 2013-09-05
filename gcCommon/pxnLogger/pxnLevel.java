@@ -3,7 +3,7 @@ package com.growcontrol.gcCommon.pxnLogger;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.growcontrol.gcCommon.pxnUtils;
+import com.growcontrol.gcCommon.pxnUtils.pxnUtilsMath;
 
 
 public class pxnLevel implements java.io.Serializable {
@@ -49,8 +49,8 @@ public class pxnLevel implements java.io.Serializable {
 	// parse string to level
 	public static pxnLevel Parse(String name) {
 		if(name == null || name.isEmpty()) return null;
-		if(pxnUtils.isNumeric(name)) {
-			Integer i = pxnUtils.toNumber(name);
+		if(pxnUtilsMath.isNumeric(name)) {
+			Integer i = pxnUtilsMath.toNumber(name);
 			if(i != null)
 				return FindLevel(i);
 		}

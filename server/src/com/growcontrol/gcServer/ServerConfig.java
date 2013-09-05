@@ -2,11 +2,11 @@ package com.growcontrol.gcServer;
 
 import com.growcontrol.gcCommon.TimeU;
 import com.growcontrol.gcCommon.TimeUnitTime;
-import com.growcontrol.gcCommon.pxnUtils;
 import com.growcontrol.gcCommon.pxnConfig.pxnConfig;
 import com.growcontrol.gcCommon.pxnConfig.pxnConfigLoader;
 import com.growcontrol.gcCommon.pxnLogger.pxnLevel;
 import com.growcontrol.gcCommon.pxnThreadQueue.pxnThreadQueue;
+import com.growcontrol.gcCommon.pxnUtils.pxnUtilsMath;
 
 
 public final class ServerConfig {
@@ -93,7 +93,7 @@ public final class ServerConfig {
 		if(config == null) return def;
 		Integer i = config.getInt("Listen Port");
 		if(i == null) return def;
-		return pxnUtils.MinMax(i.intValue(), 1, 65536);
+		return pxnUtilsMath.MinMax(i.intValue(), 1, 65536);
 	}
 	// logic threads (0 uses main thread)
 	public static int LogicThreads() {
@@ -102,7 +102,7 @@ public final class ServerConfig {
 		if(config == null) return def;
 		Integer i = config.getInt("Logic Threads");
 		if(i == null) return def;
-		return pxnUtils.MinMax(i.intValue(), 0, pxnThreadQueue.HardLimit);
+		return pxnUtilsMath.MinMax(i.intValue(), 0, pxnThreadQueue.HardLimit);
 	}
 //	// max logic threads
 //	public static int LogicThreads() {

@@ -2,6 +2,8 @@ package com.growcontrol.gcCommon;
 
 import java.util.concurrent.TimeUnit;
 
+import com.growcontrol.gcCommon.pxnUtils.pxnUtilsString;
+
 
 public class TimeUnitTime {
 
@@ -60,37 +62,37 @@ public class TimeUnitTime {
 		String str = "";
 		// year
 		if(l > YEAR) {
-			str = pxnUtils.addStringSet(str, buildString(l, YEAR, "y"), " ");
+			str = pxnUtilsString.addSet(str, buildString(l, YEAR, "y"), " ");
 			l = l % YEAR;
 		}
 		// week
 		if(l > WEEK) {
-			str = pxnUtils.addStringSet(str, buildString(l, WEEK, "w"), " ");
+			str = pxnUtilsString.addSet(str, buildString(l, WEEK, "w"), " ");
 			l = l % WEEK;
 		}
 		// day
 		if(l > DAY) {
-			str = pxnUtils.addStringSet(str, buildString(l, DAY, "d"), " ");
+			str = pxnUtilsString.addSet(str, buildString(l, DAY, "d"), " ");
 			l = l % DAY;
 		}
 		// hour
 		if(l > HOUR) {
-			str = pxnUtils.addStringSet(str, buildString(l, HOUR, "h"), " ");
+			str = pxnUtilsString.addSet(str, buildString(l, HOUR, "h"), " ");
 			l = l % HOUR;
 		}
 		// minute
 		if(l > MIN) {
-			str = pxnUtils.addStringSet(str, buildString(l, MIN, "m"), " ");
+			str = pxnUtilsString.addSet(str, buildString(l, MIN, "m"), " ");
 			l = l % MIN;
 		}
 		// second
 		if(l > SEC) {
-			str = pxnUtils.addStringSet(str, buildString(l, SEC, "s"), " ");
+			str = pxnUtilsString.addSet(str, buildString(l, SEC, "s"), " ");
 			l = l % SEC;
 		}
 		// ms
 		if(l > MSEC) {
-			str = pxnUtils.addStringSet(str, buildString(l, MSEC, "n"), " ");
+			str = pxnUtilsString.addSet(str, buildString(l, MSEC, "n"), " ");
 		}
 		if(str.isEmpty())
 			return null;

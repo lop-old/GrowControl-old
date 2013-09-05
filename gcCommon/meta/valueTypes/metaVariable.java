@@ -1,9 +1,9 @@
 package com.growcontrol.gcCommon.meta.valueTypes;
 
-import com.growcontrol.gcCommon.pxnUtils;
 import com.growcontrol.gcCommon.meta.metaType;
 import com.growcontrol.gcCommon.meta.metaValue;
 import com.growcontrol.gcCommon.meta.valueFactory;
+import com.growcontrol.gcCommon.pxnUtils.pxnUtilsMath;
 
 
 public class metaVariable extends metaValue {
@@ -102,7 +102,7 @@ public class metaVariable extends metaValue {
 	// set value
 	public void set(Integer value) {
 		synchronized(lock) {
-			this.value = pxnUtils.MinMax(
+			this.value = pxnUtilsMath.MinMax(
 					value.intValue(),
 					min,
 					max

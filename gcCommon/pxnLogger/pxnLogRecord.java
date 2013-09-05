@@ -4,8 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.growcontrol.gcCommon.pxnUtils;
 import com.growcontrol.gcCommon.pxnClock.pxnClock;
+import com.growcontrol.gcCommon.pxnUtils.pxnUtilsString;
 
 
 public final class pxnLogRecord implements java.io.Serializable {
@@ -63,7 +63,7 @@ public final class pxnLogRecord implements java.io.Serializable {
 		}
 		// exception
 		if(ex != null)
-			builder.add(pxnUtils.ExceptionToString(ex));
+			builder.add(pxnUtilsString.ExceptionToString(ex));
 		// finished
 		return builder.toArray(new String[0]);
 	}

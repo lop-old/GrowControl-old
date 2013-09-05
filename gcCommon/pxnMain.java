@@ -10,6 +10,7 @@ import com.growcontrol.gcCommon.meta.valueTypes.metaTrigger;
 import com.growcontrol.gcCommon.meta.valueTypes.metaVariable;
 import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 import com.growcontrol.gcCommon.pxnParser.pxnParser;
+import com.growcontrol.gcCommon.pxnUtils.pxnUtilsString;
 
 
 public abstract class pxnMain {
@@ -40,7 +41,7 @@ public abstract class pxnMain {
 		pxnLog.get();
 		try {
 			// start app main
-			mainInstance.args = new pxnParser( "args:- "+pxnUtils.addStringSet("", args, " ") );
+			mainInstance.args = new pxnParser( "args:- "+pxnUtilsString.addSet("", args, " ") );
 			mainInstance.StartMain();
 		} catch (Exception e) {
 			pxnLog.get().fatal("Failed to execute StartMain()", e);
@@ -63,7 +64,7 @@ public abstract class pxnMain {
 
 	protected void addArgsMsg(String text) {
 		if(text == null || text.isEmpty()) return;
-		pxnUtils.addStringSet(argsMsg, text.replace(" ", "_"), " ");
+		pxnUtilsString.addSet(argsMsg, text.replace(" ", "_"), " ");
 	}
 	public static String getArgsMsg() {
 		return argsMsg;

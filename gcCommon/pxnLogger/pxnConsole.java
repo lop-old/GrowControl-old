@@ -10,7 +10,7 @@ import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
 
 import com.growcontrol.gcCommon.pxnApp;
-import com.growcontrol.gcCommon.pxnUtils;
+import com.growcontrol.gcCommon.pxnUtils.pxnUtilsThread;
 
 
 //TODO: password login
@@ -119,7 +119,7 @@ public class pxnConsole implements Runnable {
 			} catch (IOException e) {
 				line = null;
 				pxnLog.get().severe("Failed to get console input.", e);
-				pxnUtils.Sleep(200);
+				pxnUtilsThread.Sleep(200);
 				continue;
 			} catch (Exception e) {
 				line = null;

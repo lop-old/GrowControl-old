@@ -1,9 +1,9 @@
 package com.growcontrol.gcCommon.meta.valueTypes;
 
-import com.growcontrol.gcCommon.pxnUtils;
 import com.growcontrol.gcCommon.meta.metaType;
 import com.growcontrol.gcCommon.meta.metaValue;
 import com.growcontrol.gcCommon.meta.valueFactory;
+import com.growcontrol.gcCommon.pxnUtils.pxnUtilsMath;
 
 
 public class metaIO extends metaValue {
@@ -93,7 +93,7 @@ public class metaIO extends metaValue {
 			set((Boolean) null);
 			return;
 		}
-		Boolean b = pxnUtils.toBoolean(value);
+		Boolean b = pxnUtilsMath.toBoolean(value);
 		set(b);
 	}
 

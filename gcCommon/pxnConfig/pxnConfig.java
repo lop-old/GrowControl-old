@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.growcontrol.gcCommon.pxnUtils;
+import com.growcontrol.gcCommon.pxnUtils.pxnUtils;
 
 
 // config file loader
